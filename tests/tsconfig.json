@@ -1,0 +1,5 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": { "types": ["node"], "allowJs": true },
+  "include": ["./fixture/**/*.tsx", "./*.spec.ts", "../playwright.config.ts"]
+}

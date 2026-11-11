@@ -1,0 +1,2 @@
+# Preserve the generated bundle byte-for-byte on Windows checkouts.
+/plugin.js text eol=lf

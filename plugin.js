@@ -19,7 +19,7 @@ function formatPoll(question, options) {
   ].join("\n");
 }
 function pollChoices(message) {
-  if (message.membership || message.huddle || message.agentEnvelope) return [];
+  if (message.membership || message.huddle || message.agentEnvelope || message.diff) return [];
   const lines = (message.sourceContent ?? message.content).split("\n");
   const options = lines.slice(2, -2);
   if (!lines[0]?.startsWith(heading) || !lines[0].slice(heading.length).trim() || lines[1] !== "" || lines.at(-2) !== "" || lines.at(-1) !== instructions || options.length < 2 || options.length > choices.length || !options.every((option, index) => {

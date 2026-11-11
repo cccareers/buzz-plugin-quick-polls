@@ -1,0 +1,41 @@
+name: Test
+on:
+  push:
+    branches: [main]
+  pull_request:
+concurrency:
+  group: test-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  windows-artifact:
+    runs-on: windows-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run test:artifact
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    container:
+      # Keep this version aligned with @playwright/test in package.json.
+      image: mcr.microsoft.com/playwright:v1.65.0-noble
+      options: --user 1001 --init --ipc=host
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: git diff --exit-code -- plugin.js
+      - uses: actions/upload-artifact@v5
+        if: failure()
+        with:
+          name: browser-traces
+          path: test-results/
