@@ -103,6 +103,7 @@ const opening: ChannelPanelContext = {
 const composer = createRoot(document.getElementById("composer")!);
 const tally = createRoot(document.getElementById("tally")!);
 let closes = 0;
+let deferClose = false;
 let message: ChannelMessage | undefined;
 const renderTally = () =>
   flushSync(() =>
@@ -129,7 +130,7 @@ const api = {
           channelContext: context ?? undefined,
           close: () => {
             closes++;
-            flushSync(() => composer.render(null));
+            if (!deferClose) flushSync(() => composer.render(null));
           },
         }),
       ),
@@ -140,6 +141,9 @@ const api = {
     closes,
     subscriptions: listeners.size + channelListeners.size,
   }),
+  deferClose: () => {
+    deferClose = true;
+  },
   eligibility: (
     patch: Partial<ChannelSummary> = {},
     viewer: string | null = "alice",

@@ -200,6 +200,22 @@ for (const failure of ["Queue unavailable", null])
       sent: [{ content: poll }],
     });
   });
+test("duplicate submissions queue once while the host defers panel closure", async ({
+  page,
+}) => {
+  await fill(page);
+  await host(page, "deferClose");
+  await submit(page);
+  await expect(page.getByRole("form")).toBeVisible();
+  await submit(page);
+  expect(await host(page, "captured")).toMatchObject({
+    attempts: 1,
+    closes: 1,
+    sent: [{ channelId: "general", content: poll }],
+  });
+  await host(page, "unmount");
+  expect((await host(page, "captured")).subscriptions).toBe(0);
+});
 for (const patch of [
   { archived: true },
   { cached: true },
