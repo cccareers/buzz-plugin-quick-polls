@@ -8,13 +8,15 @@ import test from 'node:test';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 
+/** Create an isolated build project with shared dependencies and automatic cleanup. */
 async function fixture(t, sources) {
   const directory = await mkdtemp(path.join(tmpdir(), 'quick-polls-build-'));
   t.after(() => rm(directory, { recursive: true, force: true }));
   await mkdir(path.join(directory, 'src'));
   await copyFile(path.join(root, 'build.mjs'), path.join(directory, 'build.mjs'));
   await writeFile(path.join(directory, 'package.json'), '{"type":"module"}');
-  await symlink(path.join(root, 'node_modules'), path.join(directory, 'node_modules'), 'dir');
+  // Junctions do not require Windows symbolic-link privileges.
+  await symlink(path.join(root, 'node_modules'), path.join(directory, 'node_modules'), process.platform === 'win32' ? 'junction' : 'dir');
   for (const [name, content] of Object.entries(sources)) {
     await writeFile(path.join(directory, 'src', name), content);
   }
