@@ -35,7 +35,7 @@ function formatPoll(question: string, options: string[]) {
 }
 
 function pollChoices(message: PollMessage) {
-  if (message.membership || message.huddle || message.agentEnvelope) return [];
+  if (message.membership || message.huddle || message.agentEnvelope || message.diff) return [];
   const lines = (message.sourceContent ?? message.content).split("\n");
   const options = lines.slice(2, -2);
   if (

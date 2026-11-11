@@ -32,3 +32,17 @@ npm run build
 ```
 
 The build writes the self-contained `plugin.js` beside `manifest.json`. Commit the rebuilt file when you change the plugin. Buzz’s Git installer reads the committed bundle. `npm ci` also installs the pinned Buzz author types for editors.
+
+## Automated checks
+
+```sh
+npm ci
+npx playwright install chromium firefox webkit
+npm test
+```
+
+`npm test` first checks the shipped artifact against a fresh isolated build, then typechecks the plugin and runs the browser suite. `npm run test:e2e -- --project=chromium` runs one browser; the default runs headless Chromium, Firefox, and WebKit. Linux CI installs browser system dependencies with `npx playwright install --with-deps chromium firefox webkit`. Failed browser runs retain Playwright traces under `test-results/` (`npx playwright show-trace <trace.zip>`).
+
+The browser fixture bundles real React and loads the actual root `plugin.js` as an ES module through its public `inject`/`apply` entry points. It renders registered panel and message accessory components. Only Buzz host boundaries are mocked: current relay/session snapshots, channel subscriptions, eligibility inputs, synchronous message queue acceptance/failure, contribution registration, and effect cleanup. Tests cover creating and queuing polls, validation, limits, Markdown escaping, stale context/session changes, disposal, message recognition and live reaction tally updates. The fixture HTTP server serves only its page, React fixture bundle, and plugin bundle.
+
+These checks do not run the Buzz desktop application, prove relay authorization or cryptographic identity verification, send real messages, or emulate native reaction controls/delivery retries. Reaction/message snapshots are supplied in the host's public author-contract shape; the fixture isolates its partial RelaySession cast because unrelated host services are intentionally absent. Desktop integration remains a separate manual check.
