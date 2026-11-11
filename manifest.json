@@ -1,0 +1,10 @@
+{
+  "id": "community.quick-polls",
+  "name": "Quick Polls",
+  "apiVersion": 1,
+  "description": "Post a question with numbered emoji choices in a Buzz channel and see a tally of one vote per identity.",
+  "discovery": {
+    "category": "productivity",
+    "tags": ["polls", "decisions", "reactions"]
+  }
+}
